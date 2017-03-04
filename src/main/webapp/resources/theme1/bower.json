@@ -1,0 +1,21 @@
+{
+  "name": "theme1",
+  "authors": [
+    "Pasindu Ariyarathna <pasindu@mrppa.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "modernizr": "^3.3.1"
+  }
+}

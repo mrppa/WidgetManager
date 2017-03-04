@@ -1,0 +1,6 @@
+.settings
+.project
+.classpath
+store/
+target/
+src/main/webapp/resources/theme1/bower_components
