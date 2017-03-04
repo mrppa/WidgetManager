@@ -32,20 +32,12 @@ public class WidgetCenterController {
 	@Autowired
 	private MessageSource messageSource;
 
-	public WidgetServices getWidgetServices() {
-		return widgetServices;
-	}
-
-	public void setWidgetServices(WidgetServices widgetServices) {
-		this.widgetServices = widgetServices;
-	}
-
 	public MessageSource getMessageSource() {
 		return messageSource;
 	}
 
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
+	public WidgetServices getWidgetServices() {
+		return widgetServices;
 	}
 
 	private void populateWigdgetCenter(ModelAndView modelAndView, Locale locale) {
@@ -57,23 +49,6 @@ public class WidgetCenterController {
 			LOG.error("ERROR\t" + e.getException());
 			modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.widgetloaderror", null, locale));
 		}
-	}
-
-	@RequestMapping(value = "/WidgetCenter", method = RequestMethod.GET)
-	public ModelAndView viewWigetCenter(Locale locale) {
-		LOG.debug("REQUEST TO VIEW WIDGET CENTER");
-		ModelAndView modelAndView = new ModelAndView();
-		this.populateWigdgetCenter(modelAndView, locale);
-		return modelAndView;
-	}
-
-	@RequestMapping(value = "/viewAddWidget", method = RequestMethod.GET)
-	public ModelAndView viewAddWidget() {
-		LOG.debug("REQUEST TO VIEW ADD WIDGET PAGE");
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("admin/addWidget");
-		modelAndView.addObject("widget", new Widget());
-		return modelAndView;
 	}
 
 	@RequestMapping(value = "/postAddWidget", method = RequestMethod.POST)
@@ -97,6 +72,83 @@ public class WidgetCenterController {
 			modelAndView.addObject("errorMsg", messageSource.getMessage("addwidget.failure", null, locale));
 		}
 		LOG.info("ADD WIDGET REQUEST COMPLETED");
+		return modelAndView;
+	}
+
+	@RequestMapping(value = "/postModifyWidget", method = RequestMethod.POST)
+	public ModelAndView postModifyWidget(@ModelAttribute Widget widget, Locale locale) {
+		LOG.info("MODIFY WIDGET REQUEST");
+		ModelAndView modelAndView = new ModelAndView();
+		try {
+			this.widgetServices.updateWidget(widget);
+			this.populateWigdgetCenter(modelAndView, locale);
+			String[] arr = { widget.getName() };
+			modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
+
+		} catch (WidgetException e) {
+			LOG.error("ERROR\t" + e.getException());
+			this.populateWigdgetCenter(modelAndView, locale);
+			modelAndView.addObject("errorMsg", messageSource.getMessage("modifywidget.failure", null, locale));
+		}
+		LOG.info("MODIFY WIDGET REQUEST COMPLETED");
+		return modelAndView;
+	}
+
+	// @RequestMapping(value = "/postUploadWidget", method = RequestMethod.POST)
+	@PostMapping("/postUploadWidget")
+	public ModelAndView postUploadWidget(@RequestParam("file") MultipartFile file,
+			@RequestParam("widgetName") String widgetName, Locale locale) {
+		LOG.info("REQUEST TO UPLOAD WIDGET \twidgetName\t" + widgetName);
+		ModelAndView modelAndView = new ModelAndView();
+		Widget widget = null;
+		try {
+			widget = this.widgetServices.getWidget(widgetName);
+
+			if (widget == null) {
+				LOG.error("WIDGET NOT FOUND . WIDGET NAME\t" + widgetName);
+				this.populateWigdgetCenter(modelAndView, locale);
+				modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
+			} else if (file.isEmpty()) {
+				LOG.error("EMPTY FILE DETECTED");
+				modelAndView.setViewName("admin/uploadWidget");
+				modelAndView.addObject("errorMsg",
+						messageSource.getMessage("uploadwidget.emptyfileerror", null, locale));
+				modelAndView.addObject("widget", widget);
+			} else {
+				this.widgetServices.uploadWidget(widget, file.getInputStream());
+				this.populateWigdgetCenter(modelAndView, locale);
+				String[] arr = { widget.getName() };
+				modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
+			}
+
+		} catch (WidgetException e) {
+			LOG.error("ERROR", e);
+			this.populateWigdgetCenter(modelAndView, locale);
+			modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
+		} catch (IOException e) {
+			LOG.error("FILE READ EXCEPTION", e);
+			modelAndView.setViewName("admin/uploadWidget");
+			modelAndView.addObject("widget", widget);
+		}
+
+		return modelAndView;
+
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public void setWidgetServices(WidgetServices widgetServices) {
+		this.widgetServices = widgetServices;
+	}
+
+	@RequestMapping(value = "/viewAddWidget", method = RequestMethod.GET)
+	public ModelAndView viewAddWidget() {
+		LOG.debug("REQUEST TO VIEW ADD WIDGET PAGE");
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("admin/addWidget");
+		modelAndView.addObject("widget", new Widget());
 		return modelAndView;
 	}
 
@@ -124,25 +176,6 @@ public class WidgetCenterController {
 		return modelAndView;
 	}
 
-	@RequestMapping(value = "/postModifyWidget", method = RequestMethod.POST)
-	public ModelAndView postModifyWidget(@ModelAttribute Widget widget, Locale locale) {
-		LOG.info("MODIFY WIDGET REQUEST");
-		ModelAndView modelAndView = new ModelAndView();
-		try {
-			this.widgetServices.updateWidget(widget);
-			this.populateWigdgetCenter(modelAndView, locale);
-			String[] arr = { widget.getName() };
-			modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
-
-		} catch (WidgetException e) {
-			LOG.error("ERROR\t" + e.getException());
-			this.populateWigdgetCenter(modelAndView, locale);
-			modelAndView.addObject("errorMsg", messageSource.getMessage("modifywidget.failure", null, locale));
-		}
-		LOG.info("MODIFY WIDGET REQUEST COMPLETED");
-		return modelAndView;
-	}
-
 	@RequestMapping(value = "/viewUploadWidget", method = RequestMethod.GET)
 	public ModelAndView viewUploadWidget(@RequestParam("widgetName") String widgetName, Locale locale) {
 		LOG.debug("REQUEST TO VIEW ADD WIDGET PAGE \twidgetName\t" + widgetName);
@@ -167,47 +200,12 @@ public class WidgetCenterController {
 		return modelAndView;
 	}
 
-//	@RequestMapping(value = "/postUploadWidget", method = RequestMethod.POST)
-	@PostMapping("/postUploadWidget") 
-	public ModelAndView postUploadWidget(@RequestParam("file") MultipartFile file,
-			@RequestParam("widgetName") String widgetName, Locale locale) {
-		LOG.info("REQUEST TO UPLOAD WIDGET \twidgetName\t" + widgetName);
+	@RequestMapping(value = "/WidgetCenter", method = RequestMethod.GET)
+	public ModelAndView viewWigetCenter(Locale locale) {
+		LOG.debug("REQUEST TO VIEW WIDGET CENTER");
 		ModelAndView modelAndView = new ModelAndView();
-		Widget widget=null;
-		try {
-			widget = this.widgetServices.getWidget(widgetName);
-			
-			if(widget==null)
-			{
-				LOG.error("WIDGET NOT FOUND . WIDGET NAME\t" + widgetName);
-				this.populateWigdgetCenter(modelAndView, locale);
-				modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
-			}
-			else if(file.isEmpty())
-			{
-				LOG.error("EMPTY FILE DETECTED");
-				modelAndView.setViewName("admin/uploadWidget");
-				modelAndView.addObject("errorMsg", messageSource.getMessage("uploadwidget.emptyfileerror", null, locale));
-				modelAndView.addObject("widget", widget);
-			}else{
-				this.widgetServices.uploadWidget(widget, file.getInputStream());
-				this.populateWigdgetCenter(modelAndView, locale);
-				String[] arr = { widget.getName() };
-				modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
-			}
-			
-		} catch (WidgetException e) {
-			LOG.error("ERROR" ,e);
-			this.populateWigdgetCenter(modelAndView, locale);
-			modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
-		} catch (IOException e) {
-			LOG.error("FILE READ EXCEPTION",e);
-			modelAndView.setViewName("admin/uploadWidget");
-			modelAndView.addObject("widget", widget);
-		}
-
+		this.populateWigdgetCenter(modelAndView, locale);
 		return modelAndView;
-
 	}
 
 }

@@ -1,7 +1,6 @@
 package com.mrppa.widgetmanager.admin.services;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,22 +19,6 @@ public class WidgetServices {
 
 	private MongoOperations mongoOperations;
 	private WidgetStore widgetStore;
-
-	public MongoOperations getMongoOperations() {
-		return mongoOperations;
-	}
-
-	public void setMongoOperations(MongoOperations mongoOperations) {
-		this.mongoOperations = mongoOperations;
-	}
-
-	public WidgetStore getWidgetStore() {
-		return widgetStore;
-	}
-
-	public void setWidgetStore(WidgetStore widgetStore) {
-		this.widgetStore = widgetStore;
-	}
 
 	public void addWidget(Widget widget) throws WidgetException {
 		LOG.info("ADD WIDGET SERVICE PROCESS STARTED");
@@ -63,6 +46,10 @@ public class WidgetServices {
 		return widgets;
 	}
 
+	public MongoOperations getMongoOperations() {
+		return mongoOperations;
+	}
+
 	public Widget getWidget(String widgetName) throws WidgetException {
 		LOG.debug("LOADING WIDGET . NAME\t" + widgetName);
 		Widget widget;
@@ -76,6 +63,31 @@ public class WidgetServices {
 		return widget;
 	}
 
+	public WidgetStore getWidgetStore() {
+		return widgetStore;
+	}
+
+	public InputStream readWidgetContentFile(Widget widget, String filePath) throws WidgetException {
+		LOG.trace("READ WIDGET CONTENT \t" + widget.getName() + " FILE PATH\t" + filePath);
+		InputStream inputStream = null;
+		try {
+			inputStream = this.widgetStore.readWidgetFile(widget.getWidgetID(), filePath);
+			LOG.info("WIDGET SUCCESSFULLY UPLOADED");
+		} catch (Exception e) {
+			LOG.error("ERROR WHILE UPLOAD WIDGET", e);
+			throw new WidgetException("ERROR WHILE UPLOAD WIDGET");
+		}
+		return inputStream;
+	}
+
+	public void setMongoOperations(MongoOperations mongoOperations) {
+		this.mongoOperations = mongoOperations;
+	}
+
+	public void setWidgetStore(WidgetStore widgetStore) {
+		this.widgetStore = widgetStore;
+	}
+
 	public void updateWidget(Widget widget) throws WidgetException {
 		LOG.info("UPDATE WIDGET SERVICE PROCESS STARTED");
 		try {
@@ -87,8 +99,8 @@ public class WidgetServices {
 		}
 
 	}
-	
-	public void uploadWidget(Widget widget,InputStream inputStream) throws WidgetException {
+
+	public void uploadWidget(Widget widget, InputStream inputStream) throws WidgetException {
 		LOG.info("UPLOAD WIDGET SERVICE PROCESS NAME\t" + widget.getName());
 		try {
 			this.widgetStore.uploadWidget(widget.getWidgetID(), inputStream);
@@ -98,18 +110,5 @@ public class WidgetServices {
 			throw new WidgetException("ERROR WHILE UPLOAD WIDGET");
 		}
 
-	}
-	
-	public InputStream readWidgetContentFile(Widget widget,String filePath)  throws WidgetException {
-		LOG.trace("READ WIDGET CONTENT \t" + widget.getName()+" FILE PATH\t"+filePath);
-		InputStream inputStream=null;
-		try {
-			inputStream=this.widgetStore.readWidgetFile(widget.getWidgetID(), filePath);
-			LOG.info("WIDGET SUCCESSFULLY UPLOADED");
-		} catch (Exception e) {
-			LOG.error("ERROR WHILE UPLOAD WIDGET", e);
-			throw new WidgetException("ERROR WHILE UPLOAD WIDGET");
-		}
-		return inputStream;
 	}
 }

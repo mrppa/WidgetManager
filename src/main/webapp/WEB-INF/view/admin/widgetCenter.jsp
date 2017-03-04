@@ -7,10 +7,11 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>Insert title here</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WidgetManager</title>
 <spring:url value="/resources/bower_components/bootstrap/dist/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/bower_components/bootstrap/dist/js/bootstrap.min.js" var="bootstrapJs" />
-<spring:url value="/resources/bower_components/modernizr/bin/modernizr" var="modernizrJs" />
+<spring:url value="/resources/js/modernizr-custom.js" var="modernizrJs" />
 <spring:url value="/resources/bower_components/jquery/dist/jquery.min.js" var="jQueryJs" />
 
 <script src="${jQueryJs}"></script>
