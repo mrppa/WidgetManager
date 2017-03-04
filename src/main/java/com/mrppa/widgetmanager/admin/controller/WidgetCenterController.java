@@ -105,8 +105,35 @@ public class WidgetCenterController {
 		LOG.info("MODIFY WIDGET REQUEST COMPLETED");
 		return modelAndView;
 	}
+	
+	@RequestMapping(value = "/postDeleteWidget")
+	public ModelAndView postDeleteWidget(@RequestParam("widgetName") String widgetName, Locale locale) {
+		LOG.info("DELETE WIDGET REQUEST");
+		ModelAndView modelAndView = new ModelAndView();
+		Widget widget = null;
+		try {
+			widget = this.widgetServices.getWidget(widgetName);
+			if (widget==null) {
+				LOG.error("WIDGET NOT FOUND . WIDGET NAME\t" + widgetName);
+				this.populateWigdgetCenter(modelAndView, locale);
+				modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
+			}else{
+				this.widgetServices.deleteWidget(widget);
+				this.populateWigdgetCenter(modelAndView, locale);
+				String[] arr = { widget.getName() };
+				modelAndView.addObject("successMsg", messageSource.getMessage("deletewidget.success", arr, locale));
+			}
 
-	// @RequestMapping(value = "/postUploadWidget", method = RequestMethod.POST)
+		} catch (WidgetException e) {
+			LOG.error("ERROR\t" + e.getException());
+			this.populateWigdgetCenter(modelAndView, locale);
+			modelAndView.addObject("errorMsg", messageSource.getMessage("deletewidget.failure", null, locale));
+		}
+		LOG.info("DELETE WIDGET REQUEST COMPLETED");
+		return modelAndView;
+	}
+	
+
 	@PostMapping("/postUploadWidget")
 	public ModelAndView postUploadWidget(@RequestParam("file") MultipartFile file,
 			@RequestParam("widgetName") String widgetName, Locale locale) {

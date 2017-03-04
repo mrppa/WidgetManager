@@ -99,6 +99,20 @@ public class WidgetServices {
 		}
 
 	}
+	
+	public void deleteWidget(Widget widget) throws WidgetException {
+		LOG.info("DELETE WIDGET SERVICE PROCESS STARTED");
+		try {
+			this.widgetStore.cleanUpWidgetSpace(widget.getWidgetID());
+			Query searchQuery = new Query(Criteria.where("name").is(widget.getName()));
+			mongoOperations.remove(searchQuery, Widget.class);
+			LOG.info("WIDGET SUCCESSFULLY DELETED");
+		} catch (Exception e) {
+			LOG.error("ERROR WHILE DELETING WIDGET", e);
+			throw new WidgetException("ERROR WHILE DELETING WIDGET");
+		}
+
+	}
 
 	public void uploadWidget(Widget widget, InputStream inputStream) throws WidgetException {
 		LOG.info("UPLOAD WIDGET SERVICE PROCESS NAME\t" + widget.getName());
