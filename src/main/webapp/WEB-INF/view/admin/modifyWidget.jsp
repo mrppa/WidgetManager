@@ -38,16 +38,36 @@
   		<button type="button" class="btn btn-default" onclick="location.href='viewUploadWidget?widgetName=${widget.name}'" ><spring:message code="modifywidget.fileupldbtn"/></button>
 	</div>
 	
-	<form:form commandName="widget" action="postModifyWidget" method="POST">
-		<form:label path="name"><spring:message code="modifywidget.name"/></form:label>
-		<form:input path="name" class="form-control"  readonly="true"/><br>
-		<form:label path="description"><spring:message code="modifywidget.description"/></form:label>
-		<form:input path="description"  class="form-control" />
-		<form:label path="widgetID"><spring:message code="modifywidget.widgetID"/></form:label>
-		<form:input path="widgetID" class="form-control"  readonly="true"/><br>
-		<input type="submit" class="btn btn-default" value='<spring:message code="modifywidget.submit"/>'>
-	</form:form>
-		
+	<div class="panel panel-default">
+  		<div class="panel-heading"></div>
+  		<div class="panel-body">   	
+		<form:form commandName="widget" action="postModifyWidget" method="POST" class="form-horizontal">
+			<div class="form-group">
+				<form:label path="name" class="col-sm-1 control-label"><spring:message code="modifywidget.name"/></form:label>
+				<div class="col-sm-6">
+					<form:input path="name" class="form-control"  readonly="true"/>
+				</div>
+				<form:errors path="name"  class="col-sm-3 control-label"/>
+			</div>
+			<div class="form-group">
+				<form:label path="description" class="col-sm-1 control-label"><spring:message code="modifywidget.description"/></form:label>
+				<div class="col-sm-6">
+					<form:textarea path="description" class="form-control"/>
+				</div>
+				<form:errors path="description"  class="col-sm-3 control-label"/>
+			</div>
+			<div class="form-group">
+				<form:label path="widgetID" class="col-sm-1 control-label"><spring:message code="modifywidget.widgetID"/></form:label>
+				<div class="col-sm-6">
+					<form:input path="widgetID" class="form-control"  readonly="true"/>
+				</div>
+				<form:errors path="widgetID"  class="col-sm-3 control-label"/>
+			</div>
+			 <button type="submit" class="btn btn-default"><spring:message code="modifywidget.submit"/></button>
+		</form:form>
+  		</div>
+  	  	<div class="panel-footer"></div>
+  	</div>	
 		
 </body>
 </html>

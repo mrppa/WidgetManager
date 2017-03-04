@@ -37,13 +37,28 @@
 	<div class="btn-group" role="group" aria-label="...">
   		<button type="button" class="btn btn-default" onclick="location.href='WidgetCenter'" ><spring:message code="widgetcenter.widgetcenterbtn"/></button>
 	</div>
-	
-	<form:form commandName="widget" action="postAddWidget" method="POST">
-		<form:label path="name"><spring:message code="addwidget.name"/></form:label>
-		<form:input path="name" class="form-control"/><br>
-		<form:label path="description"><spring:message code="addwidget.description"/></form:label>
-		<form:input path="description"  class="form-control" />
-		<input type="submit" class="btn btn-default" value='<spring:message code="addwidget.submit"/>'>
-	</form:form>
+	<div class="panel panel-default">
+  		<div class="panel-heading"></div>
+  		<div class="panel-body">   	
+		<form:form commandName="widget" action="postAddWidget" method="POST" class="form-horizontal">
+			<div class="form-group">
+				<form:label path="name" class="col-sm-1 control-label"><spring:message code="addwidget.name"/></form:label>
+				<div class="col-sm-6">
+					<form:input path="name" class="form-control"/>
+				</div>
+				<form:errors path="name"  class="col-sm-3 control-label"/>
+			</div>
+			<div class="form-group">
+				<form:label path="description" class="col-sm-1 control-label"><spring:message code="addwidget.description"/></form:label>
+				<div class="col-sm-6">
+					<form:textarea path="description" class="form-control"/>
+				</div>
+				<form:errors path="description"  class="col-sm-3 control-label"/>
+			</div>
+			 <button type="submit" class="btn btn-default"><spring:message code="addwidget.submit"/></button>
+		</form:form>
+  		</div>
+  	  	<div class="panel-footer"></div>
+  	</div>
 </body>
 </html>

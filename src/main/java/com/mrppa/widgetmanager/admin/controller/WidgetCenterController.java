@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,11 +55,15 @@ public class WidgetCenterController {
 	}
 
 	@RequestMapping(value = "/postAddWidget", method = RequestMethod.POST)
-	public ModelAndView postAddWidget(@ModelAttribute Widget widget, Locale locale) {
+	public ModelAndView postAddWidget(@ModelAttribute @Valid Widget widget, BindingResult result, Locale locale) {
 		LOG.info("ADD WIDGET REQUEST");
 		ModelAndView modelAndView = new ModelAndView();
 		try {
-			if (this.widgetServices.getWidget(widget.getName()) != null) {
+			if (result.hasErrors()) {
+				modelAndView.setViewName("admin/addWidget");
+				modelAndView.addObject("widget", widget);
+			}
+			else if (this.widgetServices.getWidget(widget.getName()) != null) {
 				modelAndView.setViewName("admin/addWidget");
 				modelAndView.addObject("widget", widget);
 				modelAndView.addObject("errorMsg", messageSource.getMessage("addwidget.alreadyexists", null, locale));
@@ -76,14 +83,19 @@ public class WidgetCenterController {
 	}
 
 	@RequestMapping(value = "/postModifyWidget", method = RequestMethod.POST)
-	public ModelAndView postModifyWidget(@ModelAttribute Widget widget, Locale locale) {
+	public ModelAndView postModifyWidget(@ModelAttribute @Valid Widget widget, BindingResult result , Locale locale) {
 		LOG.info("MODIFY WIDGET REQUEST");
 		ModelAndView modelAndView = new ModelAndView();
 		try {
-			this.widgetServices.updateWidget(widget);
-			this.populateWigdgetCenter(modelAndView, locale);
-			String[] arr = { widget.getName() };
-			modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
+			if (result.hasErrors()) {
+				modelAndView.setViewName("admin/modifyWidget");
+				modelAndView.addObject("widget", widget);
+			}else{
+				this.widgetServices.updateWidget(widget);
+				this.populateWigdgetCenter(modelAndView, locale);
+				String[] arr = { widget.getName() };
+				modelAndView.addObject("successMsg", messageSource.getMessage("modifywidget.success", arr, locale));
+			}
 
 		} catch (WidgetException e) {
 			LOG.error("ERROR\t" + e.getException());
