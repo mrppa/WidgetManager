@@ -14,7 +14,7 @@
   		<div class="panel-heading"><spring:message code="uploadwidget.widget" arguments="${widget.name}"/></div>
   		<div class="panel-body">
     	<div class="list-group">
-  			<form method="POST" action="postUploadWidget" enctype="multipart/form-data">
+  			<form method="POST" action="postUploadWidget?${_csrf.parameterName}=${_csrf.token}" enctype="multipart/form-data">
   				<input type="hidden" name="widgetName" value="${widget.name}">
    				<input type="file" name="file" /><br/>
     			<input type="submit" value='<spring:message code="uploadwidget.submit"/>'  class="btn btn-default" />
