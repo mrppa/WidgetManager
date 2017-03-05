@@ -20,6 +20,7 @@
 		<mongo_spring.version>1.10.1.RELEASE</mongo_spring.version>
 		<javax_validation.version>1.1.0.Final</javax_validation.version>
 		<hibernate.version>5.0.1.Final</hibernate.version>
+		<tiles.version>3.0.7</tiles.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -102,6 +103,11 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring.security.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tiles</groupId>
+			<artifactId>tiles-extras</artifactId>
+			<version>${tiles.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
