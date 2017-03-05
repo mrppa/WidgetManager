@@ -9,16 +9,34 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Component;
 
 import com.mrppa.widgetmanager.WidgetException;
 import com.mrppa.widgetmanager.modal.Widget;
 import com.mrppa.widgetmanager.store.WidgetStore;
 
+@Component
 public class WidgetServices {
 	private static final Logger LOG = LoggerFactory.getLogger(WidgetServices.class);
 
 	private MongoOperations mongoOperations;
 	private WidgetStore widgetStore;
+
+	public MongoOperations getMongoOperations() {
+		return mongoOperations;
+	}
+
+	public WidgetStore getWidgetStore() {
+		return widgetStore;
+	}
+
+	public void setMongoOperations(MongoOperations mongoOperations) {
+		this.mongoOperations = mongoOperations;
+	}
+
+	public void setWidgetStore(WidgetStore widgetStore) {
+		this.widgetStore = widgetStore;
+	}
 
 	public void addWidget(Widget widget) throws WidgetException {
 		LOG.info("ADD WIDGET SERVICE PROCESS STARTED");
@@ -46,10 +64,6 @@ public class WidgetServices {
 		return widgets;
 	}
 
-	public MongoOperations getMongoOperations() {
-		return mongoOperations;
-	}
-
 	public Widget getWidget(String widgetName) throws WidgetException {
 		LOG.debug("LOADING WIDGET . NAME\t" + widgetName);
 		Widget widget;
@@ -63,11 +77,7 @@ public class WidgetServices {
 		return widget;
 	}
 
-	public WidgetStore getWidgetStore() {
-		return widgetStore;
-	}
-
-	public InputStream readWidgetContentFile(Widget widget, String filePath) throws WidgetException {
+	public InputStream readWidgetContentFile(Widget widget,String filePath) throws WidgetException {
 		LOG.trace("READ WIDGET CONTENT \t" + widget.getName() + " FILE PATH\t" + filePath);
 		InputStream inputStream = null;
 		try {
@@ -78,14 +88,6 @@ public class WidgetServices {
 			throw new WidgetException("ERROR WHILE UPLOAD WIDGET");
 		}
 		return inputStream;
-	}
-
-	public void setMongoOperations(MongoOperations mongoOperations) {
-		this.mongoOperations = mongoOperations;
-	}
-
-	public void setWidgetStore(WidgetStore widgetStore) {
-		this.widgetStore = widgetStore;
 	}
 
 	public void updateWidget(Widget widget) throws WidgetException {
@@ -99,7 +101,7 @@ public class WidgetServices {
 		}
 
 	}
-	
+
 	public void deleteWidget(Widget widget) throws WidgetException {
 		LOG.info("DELETE WIDGET SERVICE PROCESS STARTED");
 		try {

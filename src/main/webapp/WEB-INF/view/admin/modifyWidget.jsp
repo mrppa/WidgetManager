@@ -9,6 +9,7 @@
 	<div class="btn-group" role="group" aria-label="...">
   		<button type="button" class="btn btn-default" onclick="location.href='WidgetCenter'" ><spring:message code="widgetcenter.widgetcenterbtn"/></button>
   		<button type="button" class="btn btn-default" onclick="location.href='viewUploadWidget?widgetName=${widget.name}'" ><spring:message code="modifywidget.fileupldbtn"/></button>
+		<button type="button" class="btn btn-default" onclick="location.href='viewManageWidgetKey?widgetName=${widget.name}'" ><spring:message code="modifywidget.keyMgtbtn"/></button>
 		<a class="btn btn-large btn-primary" data-toggle="confirmation"
 	        data-btn-ok-label='<spring:message code="widgetcenter.deleteconfirm.ok"/>'  data-btn-ok-icon="glyphicon glyphicon-share-alt"
 	        data-btn-ok-class="btn-success"

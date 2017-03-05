@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.HandlerMapping;
 
+import com.mrppa.widgetmanager.admin.services.WidgetKeyServices;
 import com.mrppa.widgetmanager.admin.services.WidgetServices;
 import com.mrppa.widgetmanager.modal.Widget;
+import com.mrppa.widgetmanager.modal.WidgetKey;
 
 @Controller
 public class WidgetFrontController {
@@ -29,6 +31,9 @@ public class WidgetFrontController {
 
 	@Autowired
 	private MessageSource messageSource;
+	
+	@Autowired
+	private WidgetKeyServices widgetKeyServices;
 
 	public MessageSource getMessageSource() {
 		return messageSource;
@@ -37,16 +42,56 @@ public class WidgetFrontController {
 	public WidgetServices getWidgetServices() {
 		return widgetServices;
 	}
+	
+	public WidgetKeyServices getWidgetKeyServices() {
+		return widgetKeyServices;
+	}
 
-	@RequestMapping("/widget/{widgetName}/**")
-	public ResponseEntity openWidgetFile(@PathVariable String widgetName, HttpServletRequest request) throws Exception {
+	public void setWidgetKeyServices(WidgetKeyServices widgetKeyServices) {
+		this.widgetKeyServices = widgetKeyServices;
+	}
+
+
+	@RequestMapping("/widget/{widgetName}/{key}/**")
+	public ResponseEntity openWidgetFile(@PathVariable String widgetName,@PathVariable String key, HttpServletRequest request) throws Exception {
+		ResponseEntity responseEntity=null;
 		Widget widget = this.widgetServices.getWidget(widgetName);
-		String requestFilePath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-		requestFilePath = requestFilePath.replaceFirst("/widget/" + widgetName + "/", "");
-		InputStream inputStream = this.widgetServices.readWidgetContentFile(widget, requestFilePath);
-		InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
-		HttpHeaders headers = new HttpHeaders();
-		return new ResponseEntity(inputStreamResource, headers, HttpStatus.OK);
+		if(widget==null)
+		{
+			HttpHeaders headers = new HttpHeaders();
+			responseEntity=new ResponseEntity<String>( "INVALID WIDGET",headers,HttpStatus.BAD_REQUEST);
+		}
+		else
+		{
+			WidgetKey widgetKey=this.widgetKeyServices.getWidgetKey(widgetName, key);
+			if(widgetKey==null)
+			{
+				HttpHeaders headers = new HttpHeaders();
+				responseEntity=new ResponseEntity<String>( "INVALID WIDGET KEY",headers,HttpStatus.BAD_REQUEST);
+			}
+			else
+			{
+				try
+				{
+					String requestFilePath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+					requestFilePath = requestFilePath.replaceFirst("/widget/" + widgetName + "/" + key +"/" , "");
+					InputStream inputStream = this.widgetServices.readWidgetContentFile(widget, requestFilePath);
+					InputStreamResource inputStreamResource = new InputStreamResource(inputStream);
+					if(inputStreamResource==null || !inputStreamResource.isOpen())
+					{
+						throw new Exception("NULL STREAM");
+					}
+					HttpHeaders headers = new HttpHeaders();
+					responseEntity= new ResponseEntity(inputStreamResource, headers, HttpStatus.OK);
+				}
+				catch(Exception e){
+					HttpHeaders headers = new HttpHeaders();
+					responseEntity=new ResponseEntity<String>( "INVALID RESOURCE",headers,HttpStatus.NOT_FOUND);
+				}
+				
+			}
+		}
+		return responseEntity;
 	}
 
 	public void setMessageSource(MessageSource messageSource) {

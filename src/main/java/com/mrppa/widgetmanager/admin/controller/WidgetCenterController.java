@@ -21,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.mrppa.widgetmanager.WidgetException;
+import com.mrppa.widgetmanager.admin.services.WidgetKeyServices;
 import com.mrppa.widgetmanager.admin.services.WidgetServices;
 import com.mrppa.widgetmanager.modal.Widget;
+import com.mrppa.widgetmanager.modal.WidgetKey;
 
 @Controller
 @RequestMapping("/admin")
@@ -34,6 +36,9 @@ public class WidgetCenterController {
 
 	@Autowired
 	private MessageSource messageSource;
+
+	@Autowired
+	private WidgetKeyServices widgetKeyServices;
 
 	public MessageSource getMessageSource() {
 		return messageSource;
@@ -47,9 +52,19 @@ public class WidgetCenterController {
 		this.messageSource = messageSource;
 	}
 
+	public WidgetKeyServices getWidgetKeyServices() {
+		return widgetKeyServices;
+	}
+
+	public void setWidgetKeyServices(WidgetKeyServices widgetKeyServices) {
+		this.widgetKeyServices = widgetKeyServices;
+	}
+
 	public void setWidgetServices(WidgetServices widgetServices) {
 		this.widgetServices = widgetServices;
 	}
+	
+	
 
 	@RequestMapping(value = "/WidgetCenter", method = RequestMethod.GET)
 	public ModelAndView viewWigetCenter(ModelAndView modelAndView, Locale locale) {
@@ -67,7 +82,7 @@ public class WidgetCenterController {
 	}
 
 	@RequestMapping(value = "/viewAddWidget", method = RequestMethod.GET)
-	public ModelAndView viewAddWidget(ModelAndView modelAndView,Locale locale) {
+	public ModelAndView viewAddWidget(ModelAndView modelAndView, Locale locale) {
 		LOG.debug("REQUEST TO VIEW ADD WIDGET PAGE");
 		modelAndView.setViewName("admin/addWidget");
 		modelAndView.addObject("widget", new Widget());
@@ -167,6 +182,7 @@ public class WidgetCenterController {
 				modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.unknownError", null, locale));
 				this.viewWigetCenter(modelAndView, locale);
 			} else {
+				this.widgetKeyServices.deleteWidgetKeys(widget.getName());
 				this.widgetServices.deleteWidget(widget);
 				String[] arr = { widget.getName() };
 				modelAndView.addObject("successMsg", messageSource.getMessage("deletewidget.success", arr, locale));
@@ -223,7 +239,8 @@ public class WidgetCenterController {
 			} else if (file.isEmpty()) {
 				LOG.error("EMPTY FILE DETECTED");
 				modelAndView.setViewName("admin/uploadWidget");
-				modelAndView.addObject("errorMsg",messageSource.getMessage("uploadwidget.emptyfileerror", null, locale));
+				modelAndView.addObject("errorMsg",
+						messageSource.getMessage("uploadwidget.emptyfileerror", null, locale));
 				modelAndView.addObject("widget", widget);
 				modelAndView.addObject("pageHeader", messageSource.getMessage("uploadwidget.header", null, locale));
 			} else {
@@ -246,5 +263,65 @@ public class WidgetCenterController {
 		return modelAndView;
 
 	}
+
+	@RequestMapping(value = "/viewManageWidgetKey", method = RequestMethod.GET)
+	public ModelAndView viewManageWidgetKey(ModelAndView modelAndView, @RequestParam("widgetName") String widgetName,
+			Locale locale) {
+		LOG.debug("REQUEST TO VIEW MANAGE WIDGET KEY");
+		modelAndView.addObject("pageHeader", messageSource.getMessage("managewidgetkey.header", null, locale));
+		modelAndView.setViewName("admin/manageWidgetKey");
+		try {
+			List<WidgetKey> widgetKeys = widgetKeyServices.getWidgetKeys(widgetName);
+			modelAndView.addObject("widgetKeyList", widgetKeys);
+			modelAndView.addObject("widgetName", widgetName);
+		} catch (WidgetException e) {
+			LOG.error("ERROR\t" + e.getException());
+			modelAndView.addObject("errorMsg", messageSource.getMessage("widgetcenter.widgetloaderror", null, locale));
+			this.viewWigetCenter(modelAndView, locale);
+		}
+		return modelAndView;
+	}
+
+	@RequestMapping(value = "/postAddWidgetKey")
+	public ModelAndView postAddWidgetKey(@RequestParam("widgetName") String widgetName, Locale locale) {
+		LOG.info("ADD WIDGET KEY REQUEST");
+		ModelAndView modelAndView = new ModelAndView();
+		try {
+			WidgetKey widgetKey = new WidgetKey();
+			widgetKey.setWidgetName(widgetName);
+			widgetKeyServices.addWidgetKey(widgetKey);
+			modelAndView.addObject("successMsg", messageSource.getMessage("managewidgetkey.addsuccess", null, locale));
+			this.viewManageWidgetKey(modelAndView, widgetName, locale);
+
+		} catch (WidgetException e) {
+			LOG.error("ERROR\t" + e.getException());
+			modelAndView.addObject("errorMsg", messageSource.getMessage("managewidgetkey.addfailure", null, locale));
+			this.viewManageWidgetKey(modelAndView, widgetName, locale);
+		}
+		LOG.info("ADD WIDGET KEY REQUEST COMPLETED");
+		return modelAndView;
+	}
+	
+	@RequestMapping(value = "/postDeleteWidgetKey")
+	public ModelAndView postDeleteWidgetKey(@RequestParam("widgetName") String widgetName,@RequestParam("key") String key, Locale locale) {
+		LOG.info("REMOVE WIDGET KEY REQUEST");
+		ModelAndView modelAndView = new ModelAndView();
+		try {
+			WidgetKey widgetKey = new WidgetKey();
+			widgetKey.setWidgetName(widgetName);
+			widgetKey.setKey(key);
+			widgetKeyServices.removeWidgetKey(widgetKey);
+			modelAndView.addObject("successMsg", messageSource.getMessage("managewidgetkey.remsuccess", null, locale));
+			this.viewManageWidgetKey(modelAndView, widgetName, locale);
+
+		} catch (WidgetException e) {
+			LOG.error("ERROR\t" + e.getException());
+			modelAndView.addObject("errorMsg", messageSource.getMessage("managewidgetkey.remfailure", null, locale));
+			this.viewManageWidgetKey(modelAndView, widgetName, locale);
+		}
+		LOG.info("REMOVE WIDGET KEY REQUEST COMPLETED");
+		return modelAndView;
+	}
+
 
 }
