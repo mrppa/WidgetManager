@@ -10,6 +10,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>WidgetManager</title>
+<spring:url value="/resources/img/favicon.ico" var="faviconIco" />
 <spring:url value="/resources/bower_components/jquery/dist/jquery.min.js" var="jQueryJs" />
 <spring:url value="/resources/bower_components/bootstrap/dist/css/bootstrap.min.css" var="bootstrapCss" />
 <spring:url value="/resources/bower_components/bootstrap/dist/js/bootstrap.min.js" var="bootstrapJs" />
@@ -20,6 +21,7 @@
 <script src="${bootstrapConfimation2Js}"></script>
 <link href="${bootstrapCss}" rel="stylesheet" />
 <script src="${modernizrJs}"></script>
+<link href="${faviconIco}" rel="shortcut icon" />
 <script>
 $(document).ready(function() {
 	$('[data-toggle="confirmation"]').confirmation();
