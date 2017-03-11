@@ -22,6 +22,7 @@
 		<hibernate.version>5.0.1.Final</hibernate.version>
 		<tiles.version>3.0.7</tiles.version>
 		<javax-servlet.version>3.0.1</javax-servlet.version>
+		<aspectj.version>1.7.4</aspectj.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -115,6 +116,21 @@
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax-servlet.version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aop</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>${aspectj.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>${aspectj.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

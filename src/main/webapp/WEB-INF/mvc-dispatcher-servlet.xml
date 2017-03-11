@@ -3,6 +3,7 @@
 	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -13,9 +14,13 @@
         http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx.xsd 
         http://www.springframework.org/schema/data/mongo
-        http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd    
-        ">
-	<mvc:annotation-driven></mvc:annotation-driven>
+        http://www.springframework.org/schema/data/mongo/spring-mongo-1.0.xsd  
+        http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-3.0.xsd ">
+	<mvc:annotation-driven />
+
+	<aop:aspectj-autoproxy />
+
 	<context:component-scan base-package="com.mrppa.widgetmanager"></context:component-scan>
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -26,28 +31,33 @@
 			<value>.jsp</value>
 		</property>
 	</bean>
-	<mvc:resources mapping="/resources/**" location="/resources/theme1/" cache-period="31556926" />
-		
-	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+	<mvc:resources mapping="/resources/**" location="/resources/theme1/"
+		cache-period="31556926" />
+
+	<bean id="localeResolver"
+		class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
 		<property name="defaultLocale" value="en" />
 	</bean>
 
-	<bean id="localeChangeInterceptor"	class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+	<bean id="localeChangeInterceptor"
+		class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 		<property name="paramName" value="language" />
 	</bean>
 
-	<bean class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" >
+	<bean
+		class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping">
 		<property name="interceptors">
-		   <list>
-			<ref bean="localeChangeInterceptor" />
-		   </list>
+			<list>
+				<ref bean="localeChangeInterceptor" />
+			</list>
 		</property>
 	</bean>
 
-	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="lang" />
 	</bean>
-	
+
 
 
 	<mongo:mongo host="127.0.0.1" port="27017" />
@@ -56,32 +66,41 @@
 	<bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
 		<constructor-arg name="mongoDbFactory" ref="mongoDbFactory" />
 	</bean>
-	
+
 	<bean id="widgetStore" class="com.mrppa.widgetmanager.store.WidgetStoreImpl">
-		<property name="storeLocation" value="C:\\Users\\Pasindu\\Workspaces\\WidgetManager\\WidgetManager\\store"></property>
+		<property name="storeLocation"
+			value="C:\\Users\\Pasindu\\Workspaces\\WidgetManager\\WidgetManager\\store"></property>
 	</bean>
-	
+
 	<bean id="widgetServices" class="com.mrppa.widgetmanager.admin.services.WidgetServices">
 		<property name="mongoOperations" ref="mongoTemplate"></property>
 		<property name="widgetStore" ref="widgetStore"></property>
 	</bean>
-	
-	<bean id="widgetKeyServices" class="com.mrppa.widgetmanager.admin.services.WidgetKeyServices">
+
+	<bean id="widgetKeyServices"
+		class="com.mrppa.widgetmanager.admin.services.WidgetKeyServices">
 		<property name="mongoOperations" ref="mongoTemplate"></property>
 	</bean>
-	
-	
-	<bean id="multipartResolver"    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+
+
+	<bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 		<property name="maxUploadSize" value="20971520" />
 		<property name="maxInMemorySize" value="1048576" />
 	</bean>
-	
-	
-	 <bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
-        <property name="definitions">
-            <list>
-                <value>/WEB-INF/tiles/tiles-definitions.xml</value>
-            </list>
-        </property>
-    </bean>
+
+
+	<bean id="tilesConfigurer"
+		class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/tiles/tiles-definitions.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="logAspect" class="com.mrppa.widgetmanager.logging.LoggingAspects" />
+
+
+
 </beans>

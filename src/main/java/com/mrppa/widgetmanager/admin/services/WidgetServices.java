@@ -12,9 +12,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
 
 import com.mrppa.widgetmanager.WidgetException;
+import com.mrppa.widgetmanager.logging.EnhanceLogging;
 import com.mrppa.widgetmanager.modal.Widget;
 import com.mrppa.widgetmanager.store.WidgetStore;
 
+@EnhanceLogging
 @Component
 public class WidgetServices {
 	private static final Logger LOG = LoggerFactory.getLogger(WidgetServices.class);
